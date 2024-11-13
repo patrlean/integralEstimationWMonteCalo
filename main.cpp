@@ -1,9 +1,22 @@
+/*
+Author: Tianyou Zhao
+Class: ECE6122 
+Last Date Modified: 2024-11-13
+Description:
+This program is used to estimate the integral of a given function using Monte Carlo method.
+*/
 #include <mpi.h>
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
 
+/*
+* @brief The function to be integrated
+* @param x The input of the function
+* @param P The selector of the function
+* @return The value of the function
+*/
 double function_to_integrate(double x, int P) {
     if (P == 1) {
         return x * x;
@@ -18,8 +31,8 @@ int main(int argc, char* argv[]) {
     MPI_Init(&argc, &argv);
 
     int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank); // get the rank of the process
+    MPI_Comm_size(MPI_COMM_WORLD, &size); // get the number of processes
 
     // Command-line argument processing
     int P = 1;            // Integral selector: 1 or 2
@@ -60,6 +73,7 @@ int main(int argc, char* argv[]) {
     double local_sum = 0.0;
     double x, fx;
 
+    // Generate random samples and calculate the function value
     for (int i = 0; i < local_N; ++i) {
         x = static_cast<double>(std::rand()) / RAND_MAX; // Random x in [0, 1]
         fx = function_to_integrate(x, P);               // Evaluate the function
@@ -70,6 +84,7 @@ int main(int argc, char* argv[]) {
     double total_sum = 0.0;
     MPI_Reduce(&local_sum, &total_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
+    // Print the result on the main process
     if (rank == 0) {
         double integral_estimate = total_sum / N; // Average value over [0,1]
         if (P == 1) {
