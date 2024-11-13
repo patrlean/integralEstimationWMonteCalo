@@ -12,7 +12,6 @@ double function_to_integrate(double x, int P) {
     } else {
         return 0.0;
     }
-}
 
 int main(int argc, char* argv[]) {
     MPI_Init(&argc, &argv);
@@ -25,12 +24,28 @@ int main(int argc, char* argv[]) {
     int P = 1;            // Integral selector: 1 or 2
     int N = 1000000;      // Total number of samples
 
-    if (argc == 5) {
+    if (rank == 0) {  // parameter in main process
+        if (argc != 5) {
+            std::cout << "Usage: mpirun -np <number of processes> " << argv[0] << " -P <1|2> -N <number of samples>" << std::endl;
+            MPI_Abort(MPI_COMM_WORLD, 1);
+            return 1;
+        }
+
         for (int i = 1; i < argc; ++i) {
             if (std::string(argv[i]) == "-P") {
                 P = std::atoi(argv[++i]);
+                if (P != 1 && P != 2) {
+                    std::cout << "Error: P must be 1 or 2" << std::endl;
+                    MPI_Abort(MPI_COMM_WORLD, 1);
+                    return 1;
+                }
             } else if (std::string(argv[i]) == "-N") {
                 N = std::atoi(argv[++i]);
+                if (N <= 0) {
+                    std::cout << "Error: N must be a positive integer" << std::endl;
+                    MPI_Abort(MPI_COMM_WORLD, 1);
+                    return 1;
+                }
             }
         }
     }
