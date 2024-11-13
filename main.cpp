@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
-#include <ctime>
+#include <ctimeP 
 
 double function_to_integrate(double x, int P) {
     if (P == 1) {
@@ -60,9 +60,6 @@ int main(int argc, char* argv[]) {
     double local_sum = 0.0;
     double x, fx;
 
-    // Seed the random number generator differently for each process
-    std::srand(time(0) + rank);
-
     for (int i = 0; i < local_N; ++i) {
         x = static_cast<double>(std::rand()) / RAND_MAX; // Random x in [0, 1]
         fx = function_to_integrate(x, P);               // Evaluate the function
@@ -77,9 +74,10 @@ int main(int argc, char* argv[]) {
         double integral_estimate = total_sum / N; // Average value over [0,1]
         if (P == 1) {
             std::cout << "Estimated integral of x^2 from 0 to 1: " << integral_estimate << std::endl;
-            std::cout << "Expected value: 1/3 ≈ 0.3333" << std::endl;
+            std::cout << "Expected value: 1/3 ≈ 0.3333\nBye!" << std::endl;
         } else if (P == 2) {
             std::cout << "Estimated integral of exp(-x^2) from 0 to 1: " << integral_estimate << std::endl;
+            std::cout << "Bye!" << std::endl;
         }
     }
 
