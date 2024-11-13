@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
-#include <ctimeP 
+#include <ctime>
 
 double function_to_integrate(double x, int P) {
     if (P == 1) {
